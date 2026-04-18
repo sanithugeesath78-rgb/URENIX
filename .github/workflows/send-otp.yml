@@ -1,0 +1,46 @@
+name: Send OTP Email
+on:
+  workflow_dispatch:
+    inputs:
+      to_email:
+        description: 'Recipient email'
+        required: true
+      otp_code:
+        description: 'OTP Code'
+        required: true
+      to_name:
+        description: 'Recipient name'
+        required: true
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send OTP via Gmail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASS }}
+          subject: "🔐 ${{ github.event.inputs.otp_code }} — URENIX Verification Code"
+          to: ${{ github.event.inputs.to_email }}
+          from: "URENIX Dev Team <${{ secrets.GMAIL_USER }}>"
+          html_body: |
+            <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;border-radius:16px;overflow:hidden;">
+              <div style="background:linear-gradient(135deg,#00d4ff,#0099cc);padding:32px;text-align:center;">
+                <h1 style="margin:0;font-size:32px;color:#000;letter-spacing:5px;font-family:monospace;font-weight:900;">URENIX</h1>
+                <p style="margin:6px 0 0;color:#003d66;font-size:12px;letter-spacing:3px;">DEV TEAM · VERIFICATION</p>
+              </div>
+              <div style="background:#060d1a;padding:40px;text-align:center;">
+                <p style="color:#7aa8c7;font-size:15px;">ආයුබෝවන් ${{ github.event.inputs.to_name }}! ඔබේ verification code:</p>
+                <div style="background:#0a1628;border:2px solid #00d4ff;border-radius:14px;padding:30px;margin:24px 0;">
+                  <span style="font-family:monospace;font-size:52px;font-weight:900;color:#00d4ff;letter-spacing:14px;">${{ github.event.inputs.otp_code }}</span>
+                </div>
+                <p style="color:#ffd700;font-size:13px;">⏰ Code valid for <strong>10 minutes</strong> only</p>
+              </div>
+              <div style="background:#0a1628;border-top:1px solid rgba(0,212,255,.15);padding:18px;text-align:center;">
+                <p style="color:#4a7a99;font-size:11px;margin:0;">© 2025 URENIX Dev Team · Sri Lanka 🇱🇰</p>
+              </div>
+            </div>
